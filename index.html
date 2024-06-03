@@ -28,7 +28,7 @@
             </div>
 
             <div id="taskIdField" class="form-group hidden">
-                <label for="taskId">Task ID:</label>
+                <label for="taskId">Task ID (required for PUT and DELETE):</label>
                 <input type="number" id="taskId" name="task_id" class="form-control">
             </div>
 
@@ -60,6 +60,11 @@
         
         <h2>Response</h2>
         <div id="taskResult"></div>
+        
+        <h2>Notifications</h2>
+        <div id="notifications" class="mt-4">
+            <ul id="notificationList" class="list-group"></ul>
+        </div>
     </div>
 
     <script src="script.js"></script>

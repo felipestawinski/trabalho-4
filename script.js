@@ -5,6 +5,11 @@ document.getElementById('taskForm').addEventListener('submit', function(event) {
 
     const httpMethod = event.target.httpMethod.value;
     const taskId = event.target.task_id.value;
+    const nome = event.target.name.value;
+    const description = event.target.description.value;
+    const importance = event.target.importance.value;
+    const category = event.target.category.value;
+    const deadline = event.target.deadline.value;
     const task = {
         name: event.target.name.value,
         description: event.target.description.value,
@@ -18,7 +23,11 @@ document.getElementById('taskForm').addEventListener('submit', function(event) {
             getTasks();
             break;
         case 'POST':
-            createTask(task);
+            if (nome && description && importance && category && deadline) {
+                createTask(task);
+            } else {
+                alert('There are missing required filds');
+            }
             break;
         case 'PUT':
             if (taskId) {
@@ -37,12 +46,14 @@ document.getElementById('taskForm').addEventListener('submit', function(event) {
         default:
             alert('Invalid HTTP method selected.');
     }
+    return false
 });
 
 function getTasks() {
     fetch(API_URL)
         .then(response => response.json())
         .then(data => {
+            alert("Successfully retrieved table info!")
             displayTasks(data);
         })
         .catch(error => {
@@ -60,6 +71,7 @@ function createTask(task) {
     })
     .then(response => response.json())
     .then(data => {
+        alert("Successfully created new task!")
         displayResult(data);
     })
     .catch(error => {
@@ -77,6 +89,7 @@ function updateTask(taskId, task) {
     })
     .then(response => response.json())
     .then(data => {
+        alert("Successfully updated task!")
         displayResult(data);
     })
     .catch(error => {
@@ -90,6 +103,7 @@ function deleteTask(taskId) {
     })
     .then(response => response.json())
     .then(data => {
+        alert("Successfully deleted task!")
         displayResult(data);
     })
     .catch(error => {
@@ -159,5 +173,44 @@ function updateForm() {
     }
 }
 
-// Initialize the form based on the default selected method
+function initializeSSE() {
+    const eventSource = new EventSource('http://127.0.0.1:5000/stream');
+
+    eventSource.addEventListener('show', function(event) {
+        const message = JSON.parse(event.data);
+        console.log("teste");
+        console.log('Show event received:', message);
+        //displayNotification(message);
+        //getTasks();
+    });
+
+    eventSource.addEventListener('create', function(event) {
+        const message = JSON.parse(event.data);
+        console.log('Create event received:', message);
+        //displayNotification(message);
+    });
+
+    eventSource.addEventListener('update', function(event) {
+        const message = JSON.parse(event.data);
+        console.log('Update event received:', message);
+        //displayNotification(message);
+    });
+
+    eventSource.addEventListener('delete', function(event) {
+        const message = JSON.parse(event.data);
+        console.log('Delete event received:', message);
+        //displayNotification(message);
+    });
+
+}
+
+function displayNotification(message) {
+    const notificationList = document.getElementById('notificationList');
+    const listItem = document.createElement('li');
+    listItem.className = 'list-group-item';
+    listItem.textContent = `Event: ${message.event}, Data: ${JSON.stringify(message.data)}`;
+    notificationList.appendChild(listItem);
+}
+
 updateForm();
+initializeSSE();
