@@ -30,10 +30,10 @@ document.getElementById('taskForm').addEventListener('submit', function(event) {
             }
             break;
         case 'PUT':
-            if (taskId) {
+            if (taskId && nome && description && importance && category && deadline) {
                 updateTask(taskId, task);
             } else {
-                alert('Task ID is required for PUT method.');
+                alert('There are missing required filds');
             }
             break;
         case 'DELETE':
@@ -53,7 +53,6 @@ function getTasks() {
     fetch(API_URL)
         .then(response => response.json())
         .then(data => {
-            alert("Successfully retrieved table info!")
             displayTasks(data);
         })
         .catch(error => {
@@ -180,6 +179,7 @@ function initializeSSE() {
         const message = JSON.parse(event.data);
         console.log("teste");
         console.log('Show event received:', message);
+        alert("Notification: GET successfull!")
         //displayNotification(message);
         //getTasks();
     });
@@ -208,7 +208,7 @@ function displayNotification(message) {
     const notificationList = document.getElementById('notificationList');
     const listItem = document.createElement('li');
     listItem.className = 'list-group-item';
-    listItem.textContent = `Event: ${message.event}, Data: ${JSON.stringify(message.data)}`;
+    listItem.textContent = `Event: ${message.event}`;
     notificationList.appendChild(listItem);
 }
 

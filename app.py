@@ -57,7 +57,7 @@ def get_tasks():
         tasks.append(task)
     conn.close()
     print("aqui")
-    sse.publish({'message': 'GET'}, type='show')
+    sse.publish({"event": "GET"}, type='show')
     return jsonify(tasks)
 
 @app.route('/tasks', methods=['POST'])
@@ -71,7 +71,7 @@ def create_task():
     conn.commit()
     task_id = cur.lastrowid
     conn.close()
-    sse.publish({'message': 'POST'}, type='create')
+    sse.publish({"event": "POST"}, type='create')
     return jsonify({'id': task_id}), 201
 
 @app.route('/tasks/<int:task_id>', methods=['PUT'])
@@ -89,7 +89,7 @@ def update_task(task_id):
     cur.execute(sql, (task['name'], task['description'], task['importance'], task['category'], task['deadline'], task_id))
     conn.commit()
     conn.close()
-    sse.publish({'id': task_id, **task}, type='update')
+    sse.publish({"event": "PUT"}, type='update')
     return jsonify({'message': 'Task updated successfully'})
 
 @app.route('/tasks/<int:task_id>', methods=['DELETE'])
@@ -100,7 +100,7 @@ def delete_task(task_id):
     cur.execute(sql, (task_id,))
     conn.commit()
     conn.close()
-    sse.publish({'id': task_id}, type='delete')
+    sse.publish({"event": "DELETE"}, type='delete')
     return jsonify({'message': 'Task deleted successfully'})
 
 if __name__ == '__main__':
